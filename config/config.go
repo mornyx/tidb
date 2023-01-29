@@ -492,6 +492,20 @@ type Instance struct {
 	DDLSlowOprThreshold uint32 `toml:"ddl_slow_threshold" json:"ddl_slow_threshold"`
 	// ExpensiveQueryTimeThreshold indicates the time threshold of expensive query.
 	ExpensiveQueryTimeThreshold uint64 `toml:"tidb_expensive_query_time_threshold" json:"tidb_expensive_query_time_threshold"`
+	// StatementsSummaryEnablePersistent indicates whether to enable file persistence for stmtsummary.
+	StatementsSummaryEnablePersistent bool `toml:"tidb_statements_summary_enable_persistent" json:"tidb_statements_summary_enable_persistent"`
+	// StatementsSummaryFilename indicates the file name written by stmtsummary
+	// when StatementsSummaryEnablePersistent is true.
+	StatementsSummaryFilename string `toml:"tidb_statements_summary_filename" json:"tidb_statements_summary_filename"`
+	// StatementsSummaryFileMaxDays indicates how many days the files written by
+	// stmtsummary will be kept when StatementsSummaryEnablePersistent is true.
+	StatementsSummaryFileMaxDays int `toml:"tidb_statements_summary_file_max_days" json:"tidb_statements_summary_file_max_days"`
+	// StatementsSummaryFileMaxSize indicates the maximum size of a single file
+	// written by stmtsummary when StatementsSummaryEnablePersistent is true.
+	StatementsSummaryFileMaxSize int `toml:"tidb_statements_summary_file_max_size" json:"tidb_statements_summary_file_max_size"`
+	// StatementsSummaryFileMaxBackups indicates the maximum number of files written
+	// by stmtsummary when StatementsSummaryEnablePersistent is true.
+	StatementsSummaryFileMaxBackups int `toml:"tidb_statements_summary_file_max_backups" json:"tidb_statements_summary_file_max_backups"`
 
 	// These variables exist in both 'instance' section and another place.
 	// The configuration in 'instance' section takes precedence.
@@ -887,22 +901,27 @@ var defaultConf = Config{
 		EnableSlowLog:       *NewAtomicBool(logutil.DefaultTiDBEnableSlowLog),
 	},
 	Instance: Instance{
-		TiDBGeneralLog:              false,
-		EnablePProfSQLCPU:           false,
-		DDLSlowOprThreshold:         DefDDLSlowOprThreshold,
-		ExpensiveQueryTimeThreshold: DefExpensiveQueryTimeThreshold,
-		EnableSlowLog:               *NewAtomicBool(logutil.DefaultTiDBEnableSlowLog),
-		SlowThreshold:               logutil.DefaultSlowThreshold,
-		RecordPlanInSlowLog:         logutil.DefaultRecordPlanInSlowLog,
-		CheckMb4ValueInUTF8:         *NewAtomicBool(true),
-		ForcePriority:               "NO_PRIORITY",
-		MemoryUsageAlarmRatio:       DefMemoryUsageAlarmRatio,
-		EnableCollectExecutionInfo:  *NewAtomicBool(true),
-		PluginDir:                   "/data/deploy/plugin",
-		PluginLoad:                  "",
-		MaxConnections:              0,
-		TiDBEnableDDL:               *NewAtomicBool(true),
-		TiDBRCReadCheckTS:           false,
+		TiDBGeneralLog:                    false,
+		EnablePProfSQLCPU:                 false,
+		DDLSlowOprThreshold:               DefDDLSlowOprThreshold,
+		ExpensiveQueryTimeThreshold:       DefExpensiveQueryTimeThreshold,
+		StatementsSummaryEnablePersistent: false,
+		StatementsSummaryFilename:         "tidb-statements.log",
+		StatementsSummaryFileMaxDays:      3,
+		StatementsSummaryFileMaxSize:      64,
+		StatementsSummaryFileMaxBackups:   0,
+		EnableSlowLog:                     *NewAtomicBool(logutil.DefaultTiDBEnableSlowLog),
+		SlowThreshold:                     logutil.DefaultSlowThreshold,
+		RecordPlanInSlowLog:               logutil.DefaultRecordPlanInSlowLog,
+		CheckMb4ValueInUTF8:               *NewAtomicBool(true),
+		ForcePriority:                     "NO_PRIORITY",
+		MemoryUsageAlarmRatio:             DefMemoryUsageAlarmRatio,
+		EnableCollectExecutionInfo:        *NewAtomicBool(true),
+		PluginDir:                         "/data/deploy/plugin",
+		PluginLoad:                        "",
+		MaxConnections:                    0,
+		TiDBEnableDDL:                     *NewAtomicBool(true),
+		TiDBRCReadCheckTS:                 false,
 	},
 	Status: Status{
 		ReportStatus:          true,
